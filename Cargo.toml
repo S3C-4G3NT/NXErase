@@ -1,27 +1,50 @@
 [package]
 name = "nxerase"
-version = "1.8.1"
-edition = "2024"
-description = "NXErase: Forensic-resistant secure deletion tool for SSDs/NVMe"
+version = "2.6.0"
+edition = "2021"
+description = "Forensic-resistant secure deletion tool for SSDs/NVMe"
 authors = ["NXErase Team"]
 license = "Apache-2.0"
 
 [dependencies]
+# Error handling
 anyhow = "1.0"
+
+# Logging timestamps
 chrono = "0.4"
-clap = { version = "4.4", features = ["derive"] }
+
+# CLI Argument Parsing
+clap = { version = "4.5", features = ["derive"] }
+
+# Thread-safe communication (Progress bar)
 crossbeam-channel = "0.5"
+
+# Signal handling (Ctrl-C)
 ctrlc = "3.4"
+
+# Progress Bar UI
 indicatif = "0.17"
+
+# Low-level C bindings (REQUIRED for posix_memalign & O_DIRECT/O_SYNC flags)
 libc = "0.2"
-# FIX: Removed "fcntl" (it is now part of "fs")
-nix = { version = "0.27", features = ["fs", "user", "ioctl"] }
-num_cpus = "1.0"
+
+# System calls (fallocate, ioctl, statfs)
+nix = { version = "0.29", features = ["fs", "user", "ioctl"] }
+
+# CPU core counting for default thread pool
+num_cpus = "1.16"
+
+# Random Number Generation
 rand = "0.8"
-rayon = "1.8"
-walkdir = "2.4"
+
+# Parallel processing
+rayon = "1.10"
+
+# Recursive directory walking
+walkdir = "2.5"
 
 [profile.release]
-lto = true
-strip = true
-codegen-units = 1
+lto = true           # Link Time Optimization (smaller, faster binary)
+strip = true         # Strip symbols (smaller binary)
+codegen-units = 1    # Maximize optimization (slower compile, faster code)
+panic = "abort"      # Reduce binary size by removing stack unwind logic
